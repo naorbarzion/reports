@@ -1,47 +1,79 @@
 <!DOCTYPE html>
-<html lang="he">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>התחברות ל-Wialon</title>
+    <meta charset="utf-8" />
+    <title>Wialon Playground - Login</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="https://hst-api.wialon.com/wsdk/script/wialon.js"></script>
 </head>
 <body>
-    <h1>התחברות ל-Wialon API</h1>
-    <div id="status">מצב חיבור: ממתין להתחברות...</div>
+
+    <h2>התחברות ל-Wialon</h2>
+    Token: <input type="text" id="token" value="7ff19f9ad4339be53e5e467c2ce9006f89E824436765461534BEB679A4C0E4C86FD2AF55" />
+    <input type="button" value="Login" id="login_btn" />
+    <input type="button" value="Logout" id="logout_btn" />
+    <input type="button" value="Get User" id="user_btn" />
+    <div id="log"></div>
 
     <script>
-        // טוקן ההתחברות שלך
-        const token = '7ff19f9ad4339be53e5e467c2ce9006f89E824436765461534BEB679A4C0E4C86FD2AF55';
-
-        // כתובת הבסיס של ה-API
-        const baseUrl = 'https://hst-api.wialon.com/wialon/ajax.html?svc=token/login';
-
-        // פונקציה לחיבור עם Wialon
-        async function loginToWialon() {
-            try {
-                // יצירת בקשה עם הטוקן
-                const response = await fetch(`${baseUrl}&params={"token":"${token}"}`);
-                
-                // בדיקת סטטוס התגובה מהשרת
-                if (!response.ok) {
-                    throw new Error(`שגיאה בהתחברות: ${response.status}`);
-                }
-
-                // המרת התגובה ל-JSON
-                const data = await response.json();
-
-                // בדיקה אם ההתחברות הצליחה
-                if (data.error) {
-                    document.getElementById('status').textContent = `שגיאה בהתחברות: ${data.error}`;
-                } else {
-                    document.getElementById('status').textContent = "התחברות הצליחה! קוד משתמש: " + data.user.id;
-                }
-            } catch (error) {
-                document.getElementById('status').textContent = `שגיאה בהתחברות: ${error.message}`;
-            }
+        // פונקציה להדפסת הודעות
+        function msg(text) { 
+            $("#log").prepend(text + "<br/>"); 
         }
 
-        // קריאה לפונקציה להתחברות ברגע שהעמוד נטען
-        window.onload = loginToWialon;
+        // התחברות עם טוקן
+        function login() {
+            var sess = wialon.core.Session.getInstance(); // קבלת מופע של ה-Session
+            var user = sess.getCurrUser(); // קבלת המשתמש הנוכחי
+            if (user) { // אם יש משתמש - כבר מחובר
+                msg("You are logged as '" + user.getName() + "', click logout button first");
+                return; 
+            }
+
+            var token = $("#token").val(); // קבלת הטוקן מהקלט
+            if (!token) { // אם הטוקן ריק
+                msg("Enter token");
+                return;
+            } 
+
+            msg("Trying to login with token '" + token + "'");
+            sess.initSession("https://hst-api.wialon.com"); // אתחול ה-Session עם כתובת השרת
+            sess.loginToken(token, "", // התחברות עם טוקן
+                function (code) { // callback התחברות
+                    if (code) msg(wialon.core.Errors.getErrorText(code)); // התחברות נכשלה
+                    else msg("Logged successfully"); // התחברות הצליחה
+                }
+            );
+        }
+
+        // התנתקות
+        function logout() {
+            var user = wialon.core.Session.getInstance().getCurrUser(); // קבלת המשתמש הנוכחי
+            if (!user) { 
+                msg("You are not logged, click 'login' button"); 
+                return; 
+            } 
+            wialon.core.Session.getInstance().logout( // התנתקות
+                function (code) { // callback להתנתקות
+                    if (code) msg(wialon.core.Errors.getErrorText(code)); // התנתקות נכשלה
+                    else msg("Logout successfully"); // התנתקות הצליחה
+                }
+            );
+        }
+
+        // קבלת שם המשתמש המחובר
+        function getUser() {
+            var user = wialon.core.Session.getInstance().getCurrUser(); // קבלת המשתמש הנוכחי
+            if (!user) msg("You are not logged, click 'login' button"); // אם אין משתמש
+            else msg("You are logged as '" + user.getName() + "'"); // הצגת שם המשתמש
+        }
+
+        // ביצוע פעולה כש-DOM נטען
+        $(document).ready(function(){
+            $("#login_btn").click(login);
+            $("#logout_btn").click(logout);
+            $("#user_btn").click(getUser);
+        });
     </script>
 </body>
 </html>
