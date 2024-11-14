@@ -57,6 +57,11 @@
       המרחק מהרכב: <span id="distance-text" class="text-gray-500">בודק מיקום...</span>
     </div>
 
+    <!-- מיקום נוכחי -->
+    <div id="location-status" class="text-gray-600 text-lg font-medium mb-4">
+      המיקום הנוכחי: <span id="location-text" class="text-gray-500">מאתר את המיקום שלך...</span>
+    </div>
+
     <!-- כפתור להפעלת הרכב -->
     <button onclick="startEngine()" class="w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition disabled:opacity-50" disabled id="start-engine-btn">
       הפעל מנוע
@@ -65,7 +70,6 @@
 
   <!-- Script -->
   <script>
-    // משתנים גלובליים
     let userLatitude, userLongitude;
 
     // פונקציה לעדכון סטטוס הריליי בהתאם לבחירת הרכב
@@ -89,6 +93,7 @@
           userLatitude = position.coords.latitude;
           userLongitude = position.coords.longitude;
           checkDistance();
+          getStreetAddress(userLatitude, userLongitude); // קריאה לפונקציה לחיפוש שם הרחוב
         }, () => {
           alert("לא הצלחנו לאתר את המיקום שלך.");
         });
@@ -99,7 +104,7 @@
 
     // פונקציה לחישוב מרחק בין המשתמש לרכב
     function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371e3; // רדיוס כדור הארץ במטרים
+      const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
       const φ2 = lat2 * Math.PI / 180;
       const Δφ = (lat2 - lat1) * Math.PI / 180;
@@ -110,7 +115,7 @@
                 Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-      return R * c; // המרחק במטרים
+      return R * c;
     }
 
     // פונקציה לבדוק את המרחק בין המשתמש לרכב הנבחר
@@ -129,13 +134,30 @@
         if (distance <= 50) {
           distanceText.textContent = "נמצא ליד הרכב";
           distanceText.className = 'text-green-500';
-          startEngineBtn.disabled = false; // מאפשר להפעיל את המנוע
+          startEngineBtn.disabled = false;
         } else {
           distanceText.textContent = "רחוק מהרכב";
           distanceText.className = 'text-red-500';
-          startEngineBtn.disabled = true; // לא מאפשר להפעיל את המנוע
+          startEngineBtn.disabled = true;
         }
       }
+    }
+
+    // פונקציה לקבלת שם הרחוב באמצעות API של Nominatim OpenStreetMap
+    function getStreetAddress(latitude, longitude) {
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+        .then(response => response.json())
+        .then(data => {
+          const locationText = document.getElementById('location-text');
+          if (data && data.address && data.address.road) {
+            locationText.textContent = data.address.road + ", " + (data.address.city || data.address.town || '');
+          } else {
+            locationText.textContent = "לא הצלחנו לזהות את המיקום.";
+          }
+        })
+        .catch(() => {
+          document.getElementById('location-text').textContent = "שגיאה באיתור המיקום.";
+        });
     }
 
     // פונקציה להפעלת המנוע עם תנאים
