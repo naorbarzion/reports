@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +24,7 @@
     }
     .description-item {
       display: flex;
-      align-items: center;
+      align-items: start;
       margin-bottom: 12px;
     }
     .description-item i {
@@ -48,14 +48,18 @@
   <!-- טופס זיהוי נהג -->
   <div class="container w-full bg-white p-6 rounded-lg shadow-md space-y-4">
     <!-- קוד אישי -->
-    <div class="mb-4">
-      <label for="driver-code" class="block text-gray-700 font-medium mb-2">קוד אישי</label>
+    <div class="mb-4 text-right">
+      <label for="driver-code" class="block text-gray-700 font-medium mb-2">
+        <i class="fas fa-key ml-2"></i>קוד אישי
+      </label>
       <input type="password" id="driver-code" placeholder="הזן את הקוד האישי" class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
     </div>
     
     <!-- בחירת רכב -->
-    <div class="mb-4">
-      <label for="vehicle-select" class="block text-gray-700 font-medium mb-2">בחר רכב</label>
+    <div class="mb-4 text-right">
+      <label for="vehicle-select" class="block text-gray-700 font-medium mb-2">
+        <i class="fas fa-car-side ml-2"></i>בחר רכב
+      </label>
       <select id="vehicle-select" class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" onchange="updateRelayStatus()">
         <option value="" disabled selected>בחר רכב...</option>
         <option value="1" data-status="סגור" data-lat="32.0853" data-lng="34.7818">סקודה אוקטביה</option>
@@ -65,23 +69,23 @@
     </div>
 
     <!-- סטטוס ריליי -->
-    <div id="relay-status" class="text-gray-600 text-lg font-medium mb-4">
-      סטטוס ריליי: <span id="relay-status-text" class="text-red-500">סגור</span>
+    <div id="relay-status" class="text-gray-600 text-lg font-medium mb-4 text-right">
+      <i class="fas fa-bolt ml-2"></i>סטטוס ריליי: <span id="relay-status-text" class="text-red-500">סגור</span>
     </div>
 
     <!-- מרחק מהרכב -->
-    <div id="distance-status" class="text-gray-600 text-lg font-medium mb-4">
-      המרחק מהרכב: <span id="distance-text" class="text-gray-500">בודק מיקום...</span>
+    <div id="distance-status" class="text-gray-600 text-lg font-medium mb-4 text-right">
+      <i class="fas fa-ruler ml-2"></i>המרחק מהרכב: <span id="distance-text" class="text-gray-500">בודק מיקום...</span>
     </div>
 
     <!-- מיקום נוכחי -->
-    <div id="location-status" class="text-gray-600 text-lg font-medium mb-4">
-      המיקום הנוכחי: <span id="location-text" class="text-gray-500">מאתר את המיקום שלך...</span>
+    <div id="location-status" class="text-gray-600 text-lg font-medium mb-4 text-right">
+      <i class="fas fa-map-marker-alt ml-2"></i>המיקום הנוכחי: <span id="location-text" class="text-gray-500">מאתר את המיקום שלך...</span>
     </div>
 
     <!-- כפתור להפעלת הרכב -->
     <button onclick="startEngine()" class="w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition disabled:opacity-50" disabled id="start-engine-btn">
-      הפעל מנוע
+      <i class="fas fa-power-off ml-2"></i>הפעל מנוע
     </button>
   </div>
 
@@ -91,37 +95,37 @@
     
     <div class="description-item">
       <i class="fas fa-sign-in-alt"></i>
-      <p>ממשק Web פשוט: נהג נכנס למערכת, בוחר רכב ומזין קוד אישי.</p>
+      <p>ממשק ווב פשוט ונוח: הנהג נכנס דרך הדפדפן, בוחר רכב ומזין קוד אישי</p>
     </div>
 
     <div class="description-item">
       <i class="fas fa-check-circle"></i>
-      <p>אימות מול DB הנהגים: אימות הקוד האישי בחוצץ "נהגים" במערכת.</p>
+      <p>אימות מול מסד הנתונים: הקוד נבדק מול מסד נתונים ייעודי של הנהגים</p>
     </div>
 
     <div class="description-item">
       <i class="fas fa-car"></i>
-      <p>שליחת פקודת הנעה: אם הקוד תקין והנהג קרוב (50 מטר), נשלחת פקודת הנעה.</p>
+      <p>שליחת פקודה להנעת המנוע: אם הקוד תקין והנהג במרחק של 50 מטר, המנוע יפעל</p>
     </div>
 
     <div class="description-item">
       <i class="fas fa-user-check"></i>
-      <p>שייכות אוטומטית לרכב: הנהג משויך לרכב בעת הפעלת המנוע.</p>
+      <p>שייכות אוטומטית לרכב: הנהג משויך אוטומטית לרכב בעת ההפעלה</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-stopwatch"></i>
+      <p>ביטול השייכות עם סיום הנסיעה: לאחר כיבוי המנוע, המערכת ממתינה 5 דקות ומבטלת את השיוך</p>
     </div>
 
     <div class="description-item">
       <i class="fas fa-parking"></i>
-      <p>טיפול באזור ללא קליטה: במקרה של חניון או חוסר קליטה, המערכת לא תשלח פקודת ביטול שיוך עד לקליטה חוזרת.</p>
-    </div>
-
-    <div class="description-item">
-      <i class="fas fa-lock"></i>
-      <p>סיום נסיעה רגיל: בקליטה מלאה, המנוע ננעל מחדש לאחר 5 דקות ודורש קוד אישי להפעלה חוזרת.</p>
+      <p>סיום נסיעה באזור ללא קליטה (חניון): במצב כזה הנהג נשאר משויך והמנוע נשאר פעיל</p>
     </div>
 
     <div class="description-item">
       <i class="fas fa-map-marker-alt"></i>
-      <p>הצגת מיקום בזמן אמת: המערכת מציגה את שם הרחוב והמיקום הנוכחי.</p>
+      <p>מיקום בזמן אמת (GPS): המערכת מוודאת שהנהג במרחק 50 מטר מהרכב ומציגה מיקום נוכחי</p>
     </div>
   </div>
 
