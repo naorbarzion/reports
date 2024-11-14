@@ -15,6 +15,23 @@
     .container {
       max-width: 400px;
     }
+    .description {
+      background-color: #e1efff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 24px;
+    }
+    .description-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .description-item i {
+      font-size: 1.5rem;
+      color: #3b82f6;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-center flex flex-col items-center p-4">
@@ -68,11 +85,50 @@
     </button>
   </div>
 
+  <!-- תיאור המערכת -->
+  <div class="description w-full max-w-md text-right">
+    <h2 class="text-xl font-semibold text-blue-700 mb-4">שלבי הפתרון</h2>
+    
+    <div class="description-item">
+      <i class="fas fa-sign-in-alt"></i>
+      <p>ממשק Web פשוט: נהג נכנס למערכת, בוחר רכב ומזין קוד אישי.</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-check-circle"></i>
+      <p>אימות מול DB הנהגים: אימות הקוד האישי בחוצץ "נהגים" במערכת.</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-car"></i>
+      <p>שליחת פקודת הנעה: אם הקוד תקין והנהג קרוב (50 מטר), נשלחת פקודת הנעה.</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-user-check"></i>
+      <p>שייכות אוטומטית לרכב: הנהג משויך לרכב בעת הפעלת המנוע.</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-parking"></i>
+      <p>טיפול באזור ללא קליטה: במקרה של חניון או חוסר קליטה, המערכת לא תשלח פקודת ביטול שיוך עד לקליטה חוזרת.</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-lock"></i>
+      <p>סיום נסיעה רגיל: בקליטה מלאה, המנוע ננעל מחדש לאחר 5 דקות ודורש קוד אישי להפעלה חוזרת.</p>
+    </div>
+
+    <div class="description-item">
+      <i class="fas fa-map-marker-alt"></i>
+      <p>הצגת מיקום בזמן אמת: המערכת מציגה את שם הרחוב והמיקום הנוכחי.</p>
+    </div>
+  </div>
+
   <!-- Script -->
   <script>
     let userLatitude, userLongitude;
 
-    // פונקציה לעדכון סטטוס הריליי בהתאם לבחירת הרכב
     function updateRelayStatus() {
       const vehicleSelect = document.getElementById('vehicle-select');
       const startEngineBtn = document.getElementById('start-engine-btn');
@@ -82,18 +138,16 @@
       relayStatusText.className = 'text-red-500';
       startEngineBtn.disabled = true;
 
-      // בדיקת מרחק מהרכב לאחר בחירתו
       checkDistance();
     }
 
-    // פונקציה לבדוק את המיקום של המשתמש
     function getUserLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
           userLatitude = position.coords.latitude;
           userLongitude = position.coords.longitude;
           checkDistance();
-          getStreetAddress(userLatitude, userLongitude); // קריאה לפונקציה לחיפוש שם הרחוב
+          getStreetAddress(userLatitude, userLongitude);
         }, () => {
           alert("לא הצלחנו לאתר את המיקום שלך.");
         });
@@ -102,7 +156,6 @@
       }
     }
 
-    // פונקציה לחישוב מרחק בין המשתמש לרכב
     function calculateDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
@@ -118,7 +171,6 @@
       return R * c;
     }
 
-    // פונקציה לבדוק את המרחק בין המשתמש לרכב הנבחר
     function checkDistance() {
       const vehicleSelect = document.getElementById('vehicle-select');
       const distanceText = document.getElementById('distance-text');
@@ -143,7 +195,6 @@
       }
     }
 
-    // פונקציה לקבלת שם הרחוב באמצעות API של Nominatim OpenStreetMap
     function getStreetAddress(latitude, longitude) {
       fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
         .then(response => response.json())
@@ -160,7 +211,6 @@
         });
     }
 
-    // פונקציה להפעלת המנוע עם תנאים
     function startEngine() {
       const driverCode = document.getElementById('driver-code').value;
       const vehicleSelect = document.getElementById('vehicle-select');
@@ -176,7 +226,6 @@
       alert('המנוע הופעל בהצלחה לרכב שנבחר!');
     }
 
-    // אתחול - בקשת מיקום המשתמש
     getUserLocation();
   </script>
 
