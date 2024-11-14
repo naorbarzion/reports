@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>התחברות ל-Wialon</title>
+</head>
+<body>
+    <h1>התחברות ל-Wialon API</h1>
+    <div id="status">מצב חיבור: ממתין להתחברות...</div>
+
+    <script>
+        // טוקן ההתחברות שלך
+        const token = '7ff19f9ad4339be53e5e467c2ce9006f89E824436765461534BEB679A4C0E4C86FD2AF55';
+
+        // כתובת הבסיס של ה-API
+        const baseUrl = 'https://hst-api.wialon.com/wialon/ajax.html?svc=token/login';
+
+        // פונקציה לחיבור עם Wialon
+        async function loginToWialon() {
+            try {
+                // יצירת בקשה עם הטוקן
+                const response = await fetch(`${baseUrl}&params={"token":"${token}"}`);
+                
+                // בדיקת סטטוס התגובה מהשרת
+                if (!response.ok) {
+                    throw new Error(`שגיאה בהתחברות: ${response.status}`);
+                }
+
+                // המרת התגובה ל-JSON
+                const data = await response.json();
+
+                // בדיקה אם ההתחברות הצליחה
+                if (data.error) {
+                    document.getElementById('status').textContent = `שגיאה בהתחברות: ${data.error}`;
+                } else {
+                    document.getElementById('status').textContent = "התחברות הצליחה! קוד משתמש: " + data.user.id;
+                }
+            } catch (error) {
+                document.getElementById('status').textContent = `שגיאה בהתחברות: ${error.message}`;
+            }
+        }
+
+        // קריאה לפונקציה להתחברות ברגע שהעמוד נטען
+        window.onload = loginToWialon;
+    </script>
+</body>
+</html>
